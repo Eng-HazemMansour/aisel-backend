@@ -1,13 +1,10 @@
-const { JwtService } = require('@nestjs/jwt');
+const jwt = require('jsonwebtoken');
 const User = require('../models/User');
 
 class AuthService {
   constructor() {
     this.userModel = new User();
-    this.jwtService = new JwtService({
-      secret: process.env.JWT_SECRET || 'your-super-secret-jwt-key-change-in-production',
-      signOptions: { expiresIn: '24h' },
-    });
+    this.jwtSecret = process.env.JWT_SECRET || 'your-super-secret-jwt-key-change-in-production';
   }
 
   async validateUser(email, password) {
@@ -17,7 +14,7 @@ class AuthService {
   async login(user) {
     const payload = { email: user.email, sub: user.id, role: user.role };
     return {
-      access_token: this.jwtService.sign(payload),
+      access_token: jwt.sign(payload, this.jwtSecret, { expiresIn: '24h' }),
       user: {
         id: user.id,
         email: user.email,

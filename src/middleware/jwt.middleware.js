@@ -1,10 +1,8 @@
-const { JwtService } = require('@nestjs/jwt');
+const jwt = require('jsonwebtoken');
 
 class JwtMiddleware {
   constructor() {
-    this.jwtService = new JwtService({
-      secret: process.env.JWT_SECRET || 'your-super-secret-jwt-key-change-in-production',
-    });
+    this.jwtSecret = process.env.JWT_SECRET || 'your-super-secret-jwt-key-change-in-production';
   }
 
   extractTokenFromCookie(req) {
@@ -14,7 +12,7 @@ class JwtMiddleware {
     }
 
     try {
-      const payload = this.jwtService.verify(token);
+      const payload = jwt.verify(token, this.jwtSecret);
       return payload;
     } catch (error) {
       return null;
